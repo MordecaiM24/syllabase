@@ -267,6 +267,9 @@ async function fetchRMP(body) {
 const departments = await getDepartments(NCSU_ID);
 const csDeptId = departments.find((d) => d.name === "computer science").id;
 
+// get all CS profs
+const csProfs = await getAllProfessorsComplete(NCSU_ID, csDeptId);
+
 // search for a prof
 const professors = await searchProfessor("jessica schmidt", NCSU_ID).then(
   (res) => res.data.newSearch.teachers.edges
@@ -275,6 +278,3 @@ const professors = await searchProfessor("jessica schmidt", NCSU_ID).then(
 // get details for first result
 const profId = professors[0].node.id;
 const details = await getProfessorDetails(profId);
-
-// get all CS profs
-const csProfs = await getAllProfessorsComplete(NCSU_ID, csDeptId);
