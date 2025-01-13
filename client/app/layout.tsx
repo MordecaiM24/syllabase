@@ -41,10 +41,10 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <AppSidebar />
-            <main className="w-full">
+            <main className="w-full mb-96">
               <SidebarTrigger />
               {children}
-              <footer className="fixed bottom-4 left-12 flex flex-col flex-wrap items-start justify-center gap-2 text-sm sm:left-80">
+              <footer className="flex flex-col flex-wrap items-start justify-center gap-2 text-sm pl-12">
                 <p>Made by Mordecai Mengesteab</p>
                 <a
                   className="flex items-center gap-2 hover:underline hover:underline-offset-4"

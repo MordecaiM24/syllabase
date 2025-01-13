@@ -31,12 +31,12 @@ const CourseNode: React.FC<CourseNodeProps> = ({
   className,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(level === 0);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [dependencies, setDependencies] = useState<Dependencies>([]);
   const [courseInfo, setCourseInfo] = useState<Course | null>(
-    initialCourseInfo || null,
+    initialCourseInfo || null
   );
 
   useEffect(() => {
@@ -49,21 +49,21 @@ const CourseNode: React.FC<CourseNodeProps> = ({
   }, [courseCode, courseInfo]);
 
   useEffect(() => {
-    if (dependencies.length === 0) {
+    if (dependencies.length === 0 && (level === 0 || isExpanded)) {
       fetch(`/api/course/${courseCode}/dependencies`)
         .then((res) => res.json())
         .then((data) => setDependencies(data))
         .catch(console.error);
     }
-  }, [courseCode, dependencies]);
+  }, [courseCode, dependencies, level, isExpanded]);
 
   useEffect(() => {
     const checkStatus = () => {
       setIsBookmarked(
-        getBookmarks().some((course: Course) => course.code === courseCode),
+        getBookmarks().some((course: Course) => course.code === courseCode)
       );
       setIsAdded(
-        getAddedCourses().some((course: Course) => course.code === courseCode),
+        getAddedCourses().some((course: Course) => course.code === courseCode)
       );
     };
 
@@ -254,7 +254,7 @@ const addBookmark = (course: Course) => {
 const removeBookmark = (courseCode: string) => {
   const bookmarks = getBookmarks();
   const filtered = bookmarks.filter(
-    (course: Course) => course.code !== courseCode,
+    (course: Course) => course.code !== courseCode
   );
   localStorage.setItem("bookmarkedCourses", JSON.stringify(filtered));
 };

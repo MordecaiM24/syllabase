@@ -23,7 +23,10 @@ async function getCoursesBasicInfo(): Promise<CourseBasicInfo[]> {
     throw new Error("Failed to fetch courses");
   }
 
-  return res.json();
+  const courses = await res.json();
+  return courses.sort((a: CourseBasicInfo, b: CourseBasicInfo) =>
+    a.code.localeCompare(b.code, undefined, { sensitivity: "base" })
+  );
 }
 
 export default async function CoursePage() {
