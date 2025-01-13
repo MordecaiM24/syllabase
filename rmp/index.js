@@ -3,7 +3,7 @@ const NCSU_ID = "U2Nob29sLTY4NQ==";
 /**
  * search for professors by name at a specific school
  * @param {string} name - professor name to search for
- * @param {string} schoolId - Base64 encoded school id (e.g. "U2Nob29sLTY4NQ==" for ncsu)
+ * @param {string} schoolId - base64 encoded school id (e.g. "U2Nob29sLTY4NQ==" for ncsu)
  * @returns {Promise} search results w/ matching professors
  */
 async function searchProfessor(name, schoolId) {
@@ -48,7 +48,7 @@ async function searchProfessor(name, schoolId) {
 
 /**
  * get detailed ratings/info for a specific professor
- * @param {string} profId - Base64 encoded professor id (e.g. "VGVhY2hlci0xOTQ5NDIw")
+ * @param {string} profId - base64 encoded professor id (e.g. "VGVhY2hlci0xOTQ5NDIw")
  * @returns {Promise} professor details including ratings
  */
 async function getProfessorDetails(profId) {
@@ -104,8 +104,8 @@ async function getProfessorDetails(profId) {
 
 /**
  * get all professors at a school with optional department filter and pagination
- * @param {string} schoolId - base64 encoded school ID
- * @param {string} [deptId] - optional base64 encoded department ID to filter by
+ * @param {string} schoolId - base64 encoded school id
+ * @param {string} [deptId] - optional base64 encoded department id to filter by
  * @param {string} [cursor] - optional pagination cursor for getting next page
  * @returns {Promise} list of professors with basic info
  */
@@ -184,8 +184,8 @@ async function getAllProfessors(schoolId, deptId = null, cursor = "") {
 
 /**
  * get complete list of professors for a department/school
- * @param {string} schoolId - base64 encoded school ID
- * @param {string} [deptId] - optional base64 encoded department ID
+ * @param {string} schoolId - base64 encoded school id
+ * @param {string} [deptId] - optional base64 encoded department id
  * @param {number} [delayMs=500] - delay between requests in ms. be nice to RMP
  * @returns {Promise<Array>} complete list of professors
  */
@@ -227,7 +227,7 @@ async function getAllProfessorsComplete(
 }
 /**
  * get all departments at a school by making an empty search query
- * @param {string} schoolId - Base64 encoded school id
+ * @param {string} schoolId - base64 encoded school id
  * @returns {Promise<Array>} array of department objects with {id, name}
  */
 async function getDepartments(schoolId) {
@@ -247,7 +247,7 @@ async function getDepartments(schoolId) {
 /**
  * helper function to make graphql requests to RMP
  * @param {Object} body - request body with query and variables
- * @returns {Promise} JSON response data
+ * @returns {Promise} json response data
  */
 async function fetchRMP(body) {
   const response = await fetch("https://www.ratemyprofessors.com/graphql", {
