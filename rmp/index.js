@@ -1,12 +1,10 @@
-// utility functions for RateMyProfessors GraphQL API
-
 const NCSU_ID = "U2Nob29sLTY4NQ==";
 
 /**
- * Search for professors by name at a specific school
- * @param {string} name - Professor name to search for
- * @param {string} schoolId - Base64 encoded school ID (e.g. "U2Nob29sLTY4NQ==" for NCSU)
- * @returns {Promise} Search results with matching professors
+ * search for professors by name at a specific school
+ * @param {string} name - professor name to search for
+ * @param {string} schoolId - Base64 encoded school id (e.g. "U2Nob29sLTY4NQ==" for ncsu)
+ * @returns {Promise} search results w/ matching professors
  */
 async function searchProfessor(name, schoolId) {
   const searchQuery = `query NewSearchTeachersQuery(
@@ -49,9 +47,9 @@ async function searchProfessor(name, schoolId) {
 }
 
 /**
- * Get detailed ratings/info for a specific professor
- * @param {string} profId - Base64 encoded professor ID (e.g. "VGVhY2hlci0xOTQ5NDIw")
- * @returns {Promise} Professor details including ratings
+ * get detailed ratings/info for a specific professor
+ * @param {string} profId - Base64 encoded professor id (e.g. "VGVhY2hlci0xOTQ5NDIw")
+ * @returns {Promise} professor details including ratings
  */
 async function getProfessorDetails(profId) {
   const detailsQuery = `query TeacherRatingsPageQuery(
@@ -105,11 +103,11 @@ async function getProfessorDetails(profId) {
 }
 
 /**
- * Get all professors at a school with optional department filter and pagination
- * @param {string} schoolId - Base64 encoded school ID
- * @param {string} [deptId] - Optional base64 encoded department ID to filter by
- * @param {string} [cursor] - Optional pagination cursor for getting next page
- * @returns {Promise} List of professors with basic info
+ * get all professors at a school with optional department filter and pagination
+ * @param {string} schoolId - base64 encoded school ID
+ * @param {string} [deptId] - optional base64 encoded department ID to filter by
+ * @param {string} [cursor] - optional pagination cursor for getting next page
+ * @returns {Promise} list of professors with basic info
  */
 async function getAllProfessors(schoolId, deptId = null, cursor = "") {
   const allProfsQuery = `query TeacherSearchResultsPageQuery(
@@ -185,11 +183,11 @@ async function getAllProfessors(schoolId, deptId = null, cursor = "") {
 }
 
 /**
- * Get complete list of professors for a department/school
- * @param {string} schoolId - Base64 encoded school ID
- * @param {string} [deptId] - Optional base64 encoded department ID
- * @param {number} [delayMs=500] - Delay between requests in ms
- * @returns {Promise<Array>} Complete list of professors
+ * get complete list of professors for a department/school
+ * @param {string} schoolId - base64 encoded school ID
+ * @param {string} [deptId] - optional base64 encoded department ID
+ * @param {number} [delayMs=500] - delay between requests in ms. be nice to RMP
+ * @returns {Promise<Array>} complete list of professors
  */
 async function getAllProfessorsComplete(
   schoolId,
@@ -228,9 +226,9 @@ async function getAllProfessorsComplete(
   return allProfs;
 }
 /**
- * Get all departments at a school by making an empty search query
- * @param {string} schoolId - Base64 encoded school ID
- * @returns {Promise<Array>} Array of department objects with {id, name}
+ * get all departments at a school by making an empty search query
+ * @param {string} schoolId - Base64 encoded school id
+ * @returns {Promise<Array>} array of department objects with {id, name}
  */
 async function getDepartments(schoolId) {
   const result = await getAllProfessors(schoolId);
@@ -247,8 +245,8 @@ async function getDepartments(schoolId) {
 }
 
 /**
- * Helper function to make GraphQL requests to RMP
- * @param {Object} body - Request body with query and variables
+ * helper function to make graphql requests to RMP
+ * @param {Object} body - request body with query and variables
  * @returns {Promise} JSON response data
  */
 async function fetchRMP(body) {
@@ -266,15 +264,20 @@ async function fetchRMP(body) {
 
 const departments = await getDepartments(NCSU_ID);
 const csDeptId = departments.find((d) => d.name === "computer science").id;
+console.log(departments);
 
 // get all CS profs
 const csProfs = await getAllProfessorsComplete(NCSU_ID, csDeptId);
+console.log(csProfs);
 
 // search for a prof
 const professors = await searchProfessor("jessica schmidt", NCSU_ID).then(
   (res) => res.data.newSearch.teachers.edges
 );
+console.log(professors);
 
 // get details for first result
 const profId = professors[0].node.id;
 const details = await getProfessorDetails(profId);
+// get all reviews
+console.log(details.data.node.ratings.edges.map((e) => e.node));
