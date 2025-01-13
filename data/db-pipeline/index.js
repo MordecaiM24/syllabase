@@ -1,9 +1,12 @@
 import courses from "./output.js";
 import neo4j from "neo4j-driver";
 import fs from "fs";
+import dotenv from "dotenv";
 
-const username = "neo4j";
-const password = "mordecai";
+dotenv.config();
+
+const username = process.env.NEO4J_USERNAME;
+const password = process.env.NEO4J_PASSWORD;
 
 const driver = neo4j.driver(
   "bolt://localhost:7687",

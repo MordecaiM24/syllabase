@@ -1,3 +1,7 @@
+import fs from "fs";
+import * as departmentsJSON from "./departments.json" with {type: "json"};
+import * as professorsJSON from "./ncsuProfessors.json" with {type: "json"};
+
 const NCSU_ID = "U2Nob29sLTY4NQ==";
 
 /**
@@ -198,7 +202,7 @@ async function getAllProfessorsComplete(
   let hasMore = true;
   let cursor = "";
 
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  //   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   try {
     while (hasMore) {
@@ -215,8 +219,10 @@ async function getAllProfessorsComplete(
 
       hasMore = teachers.pageInfo.hasNextPage;
       if (hasMore) {
+        console.log("fetching next page...");
+        console.log(allProfs.length);
         cursor = teachers.pageInfo.endCursor;
-        await sleep(delayMs); // i'll be nice to your api, RMP
+        // await sleep(delayMs); // i'll be nice to your api, RMP
       }
     }
   } catch (err) {
@@ -262,22 +268,51 @@ async function fetchRMP(body) {
   return await response.json();
 }
 
-const departments = await getDepartments(NCSU_ID);
-const csDeptId = departments.find((d) => d.name === "computer science").id;
-console.log(departments);
+// const departments = await getDepartments(NCSU_ID);
+// fs.writeFileSync("departments.json", JSON.stringify(departments));
 
-// get all CS profs
-const csProfs = await getAllProfessorsComplete(NCSU_ID, csDeptId);
-console.log(csProfs);
+// const ncsuProfessors = await getAllProfessorsComplete(NCSU_ID);
+// fs.writeFileSync("ncsuProfessors.json", JSON.stringify(ncsuProfessors));
+
+const departments = departmentsJSON.default;
+const professors = professorsJSON.default;
+
+// get all classes taught by every professor
+const professorInfo = await Promise.all(
+  professors.map(async (prof, index) => {
+    let details;
+    try {
+      details = await getProfessorDetails(prof.id); 
+    } catch (e) {
+      fs.writeFileSync("error.json", `error fetching professor ${index + 1}: ${prof.firstName} ${prof.lastName}\n`, (err) => fs.writeFileSync("error.json", err));
+    }
+    
+    console.log(`fetching professor ${index + 1}...`);
+    const courses = [
+      ...new Set(details?.data?.node?.ratings?.edges?.map((e) => e.node.class)),
+    ];
+    console.log(courses);
+    return {
+      ...prof,
+      name: `${prof.firstName} ${prof.lastName}`,
+      department: prof.department?.toLowerCase(),
+      courses,
+    };
+  })
+);
+console.log(professorInfo.length);
+
+fs.writeFileSync("professorInfo.json", JSON.stringify(professorInfo), (err) => fs.writeFileSync("error.json", err));
+
 
 // search for a prof
-const professors = await searchProfessor("jessica schmidt", NCSU_ID).then(
-  (res) => res.data.newSearch.teachers.edges
-);
-console.log(professors);
+// const profSearch = await searchProfessor("jessica schmidt", NCSU_ID).then(
+//   (res) => res.data.newSearch.teachers.edges
+// );
+// console.log(profSearch);
 
 // get details for first result
-const profId = professors[0].node.id;
-const details = await getProfessorDetails(profId);
+// const profId = profSearch[0].node.id;
+// const details = await getProfessorDetails(profId);
 // get all reviews
-console.log(details.data.node.ratings.edges.map((e) => e.node));
+// console.log(details.data.node.ratings.edges.map((e) => e.node));
