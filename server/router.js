@@ -3,7 +3,6 @@ import neo4j from "neo4j-driver";
 const router = express.Router();
 import "dotenv/config.js";
 
-console.log(process.env);
 const username = process.env.NEO4J_USERNAME;
 const password = process.env.NEO4J_PASSWORD;
 
@@ -109,8 +108,6 @@ router.get("/courses", async (req, res) => {
   res.json(courses);
 });
 
-export default router;
-
 // New endpoint for basic course info
 router.get("/courses/basic", async (req, res) => {
   try {
@@ -133,3 +130,21 @@ router.get("/courses/basic", async (req, res) => {
     res.status(500).json({ error: "Error fetching courses" });
   }
 });
+
+// Get all professors who teach a course
+router.get("/course/:code/professors", async (req, res) => {
+  const courseCode = req.params.code.toUpperCase();
+
+  const session = driver.session();
+  const result = await session.run(
+    "MATCH (p:Professor)-[:TEACHES]->(c:Course {code: $courseCode}) RETURN p",
+    { courseCode }
+  );
+
+  const professors = result.records.map((record) => record.get("p").properties);
+
+  await session.close();
+  res.json(professors);
+});
+
+export default router;
