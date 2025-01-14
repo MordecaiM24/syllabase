@@ -104,7 +104,7 @@ export default function CourseSearchClient({
   };
 
   return (
-    <Card>
+    <Card className="sm:p-4">
       <CardHeader>
         <CardTitle>Course Explorer</CardTitle>
       </CardHeader>
@@ -127,7 +127,7 @@ export default function CourseSearchClient({
                     setSearchQuery(e.target.value);
                     resetPage();
                   }}
-                  className="pl-10"
+                  className="w-60 pl-10 sm:w-full"
                 />
                 {searchQuery && (
                   <button
@@ -144,7 +144,7 @@ export default function CourseSearchClient({
             </div>
 
             {/* Department Filter */}
-            <div className="flex flex-col gap-2">
+            <div className="flex w-60 flex-col gap-2 sm:w-full">
               <Label htmlFor="department">Department</Label>
               <Select
                 value={departmentFilter}
@@ -168,7 +168,7 @@ export default function CourseSearchClient({
             </div>
 
             {/* Hours Filter */}
-            <div className="flex flex-col gap-2">
+            <div className="flex w-60 flex-col gap-2 sm:w-full">
               <Label htmlFor="hours">Credit Hours</Label>
               <Select
                 value={hoursFilter}
@@ -210,7 +210,7 @@ export default function CourseSearchClient({
                   key={course.code}
                   className="block hover:no-underline"
                 >
-                  <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
+                  <Card className="h-full w-60 cursor-pointer transition-shadow hover:shadow-md sm:w-full">
                     <CardContent className="h-full pt-6">
                       <div className="mb-2 flex flex-col items-start justify-between gap-y-2">
                         <div className="flex w-full flex-row items-center justify-between">

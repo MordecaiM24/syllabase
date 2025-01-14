@@ -28,7 +28,7 @@ export default async function Page({
 
   return (
     <Suspense fallback={<div>Loading course tree...</div>}>
-      <div className="flex min-h-full flex-col px-4 py-8 gap-6">
+      <div className="flex min-h-full flex-col gap-6 px-4 py-8">
         <Card className="w-full">
           {/* Course Header and Description - Always visible */}
           <CardHeader className="pb-2">
@@ -41,24 +41,24 @@ export default async function Page({
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Course Description */}
-            <p className="dark:text-white text-gray-700">
+            <p className="text-gray-700 dark:text-white">
               {courseInfo.description}
             </p>
 
             {/* Tabs for Professors and Prerequisites */}
             <Tabs defaultValue="prerequisites" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="prerequisites" className="text-lg py-4">
+                <TabsTrigger value="prerequisites" className="py-4 text-lg">
                   Prerequisites
                 </TabsTrigger>
 
-                <TabsTrigger value="professors" className="text-lg py-4">
+                <TabsTrigger value="professors" className="py-4 text-lg">
                   Professors ({professorInfo.length})
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="professors" className="mt-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {professorInfo.map((prof) => (
                     <ProfessorCard key={prof.id} prof={prof} />
                   ))}
@@ -84,23 +84,23 @@ export default async function Page({
 function ProfessorCard({ prof }: { prof: Professor }) {
   return (
     <TooltipProvider key={prof.id}>
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="transition-shadow hover:shadow-md">
         <CardHeader>
-          <CardTitle className="text-xl p-0 font-medium flex items-center">
+          <CardTitle className="flex items-center p-0 text-xl font-medium">
             {prof.name}
             <a
               href={`https://www.ratemyprofessors.com/professor/${prof.legacyId}`}
               target="_blank"
               rel="noreferrer"
             >
-              <SquareArrowOutUpRight className="ms-2 h-4 w-4 text-gray-500 cursor-pointer" />
+              <SquareArrowOutUpRight className="ms-2 h-4 w-4 cursor-pointer text-gray-500" />
             </a>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           {/* Rating Section */}
 
-          <div className="flex space-x-4 items-center">
+          <div className="flex items-center space-x-4">
             <span className="text-base text-gray-500">
               Rating: {prof.rating.toFixed(1)}
             </span>
@@ -131,7 +131,7 @@ function ProfessorCard({ prof }: { prof: Professor }) {
           </div>
 
           {/* Number of Ratings */}
-          <div className="flex items-center gap-2 text-sm text-gray-500 pt-2">
+          <div className="flex items-center gap-2 pt-2 text-sm text-gray-500">
             <Users className="h-4 w-4" />
             {prof.numRatings} ratings
           </div>
@@ -142,7 +142,7 @@ function ProfessorCard({ prof }: { prof: Professor }) {
 }
 
 function getRatingVariant(
-  rating: number
+  rating: number,
 ): "default" | "secondary" | "destructive" {
   if (rating >= 4) return "default";
   if (rating >= 3) return "secondary";

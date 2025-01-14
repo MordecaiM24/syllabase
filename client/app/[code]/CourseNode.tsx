@@ -36,7 +36,7 @@ const CourseNode: React.FC<CourseNodeProps> = ({
   const [isAdded, setIsAdded] = useState(false);
   const [dependencies, setDependencies] = useState<Dependencies>([]);
   const [courseInfo, setCourseInfo] = useState<Course | null>(
-    initialCourseInfo || null
+    initialCourseInfo || null,
   );
 
   useEffect(() => {
@@ -60,10 +60,10 @@ const CourseNode: React.FC<CourseNodeProps> = ({
   useEffect(() => {
     const checkStatus = () => {
       setIsBookmarked(
-        getBookmarks().some((course: Course) => course.code === courseCode)
+        getBookmarks().some((course: Course) => course.code === courseCode),
       );
       setIsAdded(
-        getAddedCourses().some((course: Course) => course.code === courseCode)
+        getAddedCourses().some((course: Course) => course.code === courseCode),
       );
     };
 
@@ -254,7 +254,7 @@ const addBookmark = (course: Course) => {
 const removeBookmark = (courseCode: string) => {
   const bookmarks = getBookmarks();
   const filtered = bookmarks.filter(
-    (course: Course) => course.code !== courseCode
+    (course: Course) => course.code !== courseCode,
   );
   localStorage.setItem("bookmarkedCourses", JSON.stringify(filtered));
 };

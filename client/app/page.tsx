@@ -25,7 +25,7 @@ async function getCoursesBasicInfo(): Promise<CourseBasicInfo[]> {
 
   const courses = await res.json();
   return courses.sort((a: CourseBasicInfo, b: CourseBasicInfo) =>
-    a.code.localeCompare(b.code, undefined, { sensitivity: "base" })
+    a.code.localeCompare(b.code, undefined, { sensitivity: "base" }),
   );
 }
 
