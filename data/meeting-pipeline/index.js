@@ -1,53 +1,59 @@
-import * as courseMeetingsJSON from "../../scraper/meetingscraper/course_times.json" with {type:"json"};
-import fs from "fs";
+import neo4j from "neo4j-driver";
+import fs, { write } from "fs";
+import * as courseTimesJSON from "./courseTimes.json" with {type: "json"};
+import dotenv from "dotenv";
 
-function formatSection(section) {
-  // skip recitations and async/TBD
-  if (
-    !section.days ||
-    section.time === "TBD" ||
-    /\d{3}[A-Z]/.test(section.section)
-  )
-    return null;
+dotenv.config();
 
-  const days = section.days === "TT" ? "TTh" : section.days;
-  return `${section.section} ${days}${convertTimeToMilitary(section.time)}`;
+const username = process.env.NEO4J_USERNAME;
+const password = process.env.NEO4J_PASSWORD;
+
+const driver = neo4j.driver(
+  "bolt://localhost:7687",
+  neo4j.auth.basic(username, password)
+);
+
+await driver.verifyConnectivity();
+
+fs.writeFileSync("logs.txt", "");
+
+const courseTimes = courseTimesJSON.default;
+
+async function writeMeetingTimes(courseCode, meetingTimes) {
+  const session = driver.session({});
+
+  try {
+    const res = await session.executeWrite((tx) => {
+      return tx.run(
+        `
+        MATCH (c: Course {code: $courseCode})
+        SET c.meetingTimes = $meetingTimes
+        `,
+        {
+          courseCode,
+          meetingTimes,
+        }
+      );
+    });
+
+    const summary = res.summary;
+    fs.appendFileSync("logs.txt", JSON.stringify(summary, null, 2) + "\n");
+  } catch (e) {
+    fs.appendFileSync("logs.txt", JSON.stringify({ ERROR: e }, null, 2) + "\n");
+    console.error(e);
+  } finally {
+    await session.close();
+  }
 }
 
-function convertTimeToMilitary(timeStr) {
-  // split "1:30 PM  - 5:45 PM" into start/end times
-  const [start, end] = timeStr.split("-").map((t) => t.trim());
+async function main() {
+  await Promise.all(
+    courseTimes.map(async (course) => {
+      await writeMeetingTimes(course.courseCode, course.sections);
+    })
+  );
 
-  // parse each time
-  const parseTime = (time) => {
-    const [hourMin, ampm] = time.split(" ");
-    let [hours, mins] = hourMin.split(":").map(Number);
-
-    // convert to military
-    if (ampm === "PM" && hours !== 12) hours += 12;
-    if (ampm === "AM" && hours === 12) hours = 0;
-
-    return `${hours.toString().padStart(2, "0")}${mins
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
-  return `${parseTime(start)}-${parseTime(end)}`;
+  await driver.close();
 }
 
-const courseMeetings = courseMeetingsJSON.default;
-
-const meetingTimes = courseMeetings.map((course) => {
-  const courseCode = course.course.replace("-", "");
-
-  const sections = course.sections.map(formatSection).filter(Boolean);
-
-  return {
-    courseCode,
-    sections,
-  };
-});
-
-console.log(meetingTimes);
-
-fs.writeFileSync("meeting_times.json", JSON.stringify(meetingTimes));
+main();
