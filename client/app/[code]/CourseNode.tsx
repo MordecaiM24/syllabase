@@ -49,7 +49,7 @@ const CourseNode: React.FC<CourseNodeProps> = ({
   }, [courseCode, courseInfo]);
 
   useEffect(() => {
-    if (dependencies.length === 0 && (level === 0 || isExpanded)) {
+    if (dependencies.length === 0 || level === 0 || isExpanded) {
       fetch(`/api/course/${courseCode}/dependencies`)
         .then((res) => res.json())
         .then((data) => setDependencies(data))
